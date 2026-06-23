@@ -13,11 +13,6 @@ workflows:
           cd frontend/chalao_app
           flutter pub get
 
-      - name: Pod install
-        script: |
-          cd frontend/chalao_app/ios
-          pod install
-
       - name: Build iOS sin codesign
         script: |
           cd frontend/chalao_app
