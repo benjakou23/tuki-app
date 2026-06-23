@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "444794906596",
+    "project_id": "jnireque-13d5e",
+    "storage_bucket": "jnireque-13d5e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444794906596:android:08595d92fe05d73757c9f1",
+        "android_client_info": {
+          "package_name": "pe.chalao.chalao_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYLTOBB9u3BuXifM3wJQob3DELQ2BO3yY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
