@@ -1,11 +1,55 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from typing import Optional
 from app.database import get_db
 from app.models.tecnico import Tecnico
 from app.models.usuario import Usuario, RolUsuario
 from app.schemas.tecnico import TecnicoRegistro, TecnicoRespuesta
 
 router = APIRouter(prefix="/tecnicos", tags=["tecnicos"])
+
+@router.get("/buscar")
+def buscar_tecnicos(
+    q: Optional[str] = Query(None),
+    especialidad: Optional[str] = Query(None),
+    distrito: Optional[str] = Query(None),
+    db: Session = Depends(get_db)
+):
+    query = db.query(Tecnico, Usuario).join(
+        Usuario, Tecnico.usuario_id == Usuario.id
+    ).filter(
+        Tecnico.id_verificado == True,
+        Tecnico.activo == True,
+        Usuario.estado_verificacion == 'verificado'
+    )
+
+    if especialidad:
+        query = query.filter(
+            Tecnico.especialidades.any(especialidad))
+
+    if distrito:
+        query = query.filter(Tecnico.distrito == distrito)
+
+    if q:
+        query = query.filter(
+            Usuario.nombre.ilike(f'%{q}%') |
+            Tecnico.especialidades.any(q)
+        )
+
+    resultados = query.order_by(
+        Tecnico.calificacion.desc().nullslast()
+    ).limit(30).all()
+
+    return [{
+        'usuario_id': str(t.usuario_id),
+        'nombre': u.nombre,
+        'especialidades': t.especialidades or [],
+        'distrito': t.distrito,
+        'bio': t.bio,
+        'precio_minimo': t.precio_minimo,
+        'calificacion': t.calificacion,
+        'trabajos_completados': t.trabajos_completados or 0,
+    } for t, u in resultados]
 
 @router.post("/", response_model=TecnicoRespuesta, status_code=201)
 def crear_perfil_tecnico(datos: TecnicoRegistro, usuario_id: str, db: Session = Depends(get_db)):

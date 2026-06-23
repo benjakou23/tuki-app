@@ -94,6 +94,7 @@ def listar_usuarios(
         "estado_verificacion": u.estado_verificacion,
         "activo": u.activo,
         "creado_en": u.creado_en,
+         "motivo_rechazo": u.motivo_rechazo, 
     } for u in usuarios]
 
 @router.post("/verificaciones/{usuario_id}/accion")
@@ -146,3 +147,34 @@ def accionar_verificacion(
         raise HTTPException(status_code=400, detail="Acción no válida")
 
     return {"mensaje": f"Acción '{datos.accion}' aplicada correctamente"}
+
+@router.post("/especialidades/{usuario_id}/aprobar")
+def aprobar_especialidades(
+    usuario_id: str,
+    datos: dict,
+    db: Session = Depends(get_db)
+):
+    from app.models.tecnico import Tecnico
+    tecnico = db.query(Tecnico).filter(
+        Tecnico.usuario_id == usuario_id).first()
+    if not tecnico:
+        raise HTTPException(404, "Técnico no encontrado")
+
+    tecnico.especialidades = datos.get('especialidades', [])
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if usuario:
+        usuario.motivo_rechazo = None
+    db.commit()
+    return {"mensaje": "Especialidades aprobadas"}
+
+@router.post("/especialidades/{usuario_id}/rechazar")
+def rechazar_especialidades(
+    usuario_id: str,
+    db: Session = Depends(get_db)
+):
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if not usuario:
+        raise HTTPException(404, "No encontrado")
+    usuario.motivo_rechazo = None
+    db.commit()
+    return {"mensaje": "Solicitud rechazada"}

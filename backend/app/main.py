@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.database import engine, Base
 from app.routers import usuarios, tecnicos, pedidos, documentos, admin
+from app.routers import pedidos, suscripciones
+from app.routers import perfil
+from app.routers import reniec_router  
 import app.models.usuario
 import app.models.tecnico
 import app.models.pedido
@@ -27,6 +30,9 @@ app.include_router(tecnicos.router)
 app.include_router(pedidos.router)
 app.include_router(documentos.router)
 app.include_router(admin.router)
+app.include_router(suscripciones.router)
+app.include_router(perfil.router)
+app.include_router(reniec_router.router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
