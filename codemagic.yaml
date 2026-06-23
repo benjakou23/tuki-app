@@ -10,20 +10,22 @@ workflows:
     scripts:
       - name: Flutter pub get
         script: |
-          set -ex
           cd frontend/chalao_app
           flutter pub get
 
+      - name: Agregar Google Maps API key
+        script: |
+          PLIST="frontend/chalao_app/ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :GMSApiKey string AIzaSyDUMMY_KEY_REPLACE_ME" "$PLIST" || \
+          /usr/libexec/PlistBuddy -c "Set :GMSApiKey AIzaSyDUMMY_KEY_REPLACE_ME" "$PLIST"
+
       - name: Build iOS sin codesign
         script: |
-          set -ex
           cd frontend/chalao_app
-          flutter build ios --release --no-codesign 2>&1 | tee /tmp/build_log.txt
-          exit ${PIPESTATUS[0]}
+          flutter build ios --release --no-codesign --verbose
 
       - name: Empaquetar .ipa
         script: |
-          set -ex
           cd frontend/chalao_app/build/ios/iphoneos
           mkdir Payload
           cp -r Runner.app Payload/
@@ -32,4 +34,3 @@ workflows:
 
     artifacts:
       - frontend/chalao_app/build/ios/ipa/*.ipa
-      - /tmp/build_log.txt
