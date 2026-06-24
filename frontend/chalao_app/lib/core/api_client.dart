@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiClient {
-static const baseUrl = 'http://192.168.18.186:8000';
+static const baseUrl = 'https://mammal-bluff-engaged.ngrok-free.dev';
   static const _storage = FlutterSecureStorage();
 
   static Future<String?> getToken() async {
