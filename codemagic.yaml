@@ -19,13 +19,17 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :GMSApiKey string AIzaSyDUMMY" "$PLIST" || \
           /usr/libexec/PlistBuddy -c "Set :GMSApiKey AIzaSyDUMMY" "$PLIST"
 
+      - name: Generar Podfile y correr pod install
+        script: |
+          cd frontend/chalao_app
+          flutter precache --ios
+          cd ios
+          pod install --repo-update
+
       - name: Build iOS sin codesign
         script: |
           cd frontend/chalao_app
-          flutter build ios --release --no-codesign --verbose > /tmp/flutter_build.log 2>&1
-          BUILD_EXIT=$?
-          cat /tmp/flutter_build.log
-          exit $BUILD_EXIT
+          flutter build ios --release --no-codesign
 
       - name: Empaquetar .ipa
         script: |
@@ -37,4 +41,3 @@ workflows:
 
     artifacts:
       - frontend/chalao_app/build/ios/ipa/*.ipa
-      - /tmp/flutter_build.log
